@@ -5,9 +5,8 @@ Process and Track my Karaoke collection
 * Project created in Linux (for linux)
 1. Go thru excess folder, and undo all zip files, and record in temp db the file name and locations
 2. Go thru the start folder and unzip all files
-
- Confirm all files are in cdg/mp3 format (ie 2 files with same name)
- All zip files should be deleted (unzipped and then removed)
+ * Confirm all files are in cdg/mp3 format (ie 2 files with same name)
+ * All zip files should be deleted (unzipped and then removed)
  
 3. Rename files to a standard format (artist name [no comma] - song title (ft artist)
 
