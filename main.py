@@ -5,6 +5,11 @@ from pathlib import Path
 
 
 def test_paths():
+    """
+    test the folders/directories the program will be using to verify that they exist -
+    may eventually turn this into option to select - but for now they are set in the main variables
+    :return: false for any directory that is missing, otherwise true if all directories are verified
+    """
     if not working_dir.is_dir():
         print_messages(f'The Temp location {working_dir} does not exist.\nCan not proceed further.')
         return False
@@ -23,10 +28,17 @@ def test_paths():
 #         file_count += 1
 #
 #
-def print_messages(s, open=True, close=True):
+def print_messages(message, open=True, close=True):
+    """
+    prints nicely formatted messages to the screen
+    :param message: message to printed
+    :param open: boolean - show the opening bar
+    :param close: boolean - show the closing bar
+    :return: n/a
+    """
     if open:
         print('<', '*' * 78, '>')
-    print(s)
+    print(message)
     if close:
         print('<', '*' * 78, '>')
 #
@@ -165,9 +177,10 @@ def print_messages(s, open=True, close=True):
 
 
 def main():
-    print_messages("Ready to rock!", close=False)
-    print_messages(f"The main db location is {music_db}", False, False)
-    print_messages(f"additional temp path is {working_dir}", open=False)
+    """
+    This is our main program
+    :return: nothing is returned as this is the main function
+    """
     if not test_paths():
         exit()
     # data.db_first_launch(music_db)
