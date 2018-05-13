@@ -6,13 +6,13 @@ from pathlib import Path
 
 def test_paths():
     if not working_dir.is_dir():
-        print_messages(f'The Temp location {working_dir} does not exist.  Can not proceed further.')
+        print_messages(f'The Temp location {working_dir} does not exist.\nCan not proceed further.')
         return False
     if not finished_dir.is_dir():
-        print_messages(f'The Work location {finished_dir} does not exist.  Can not proceed further.')
+        print_messages(f'The Work location {finished_dir} does not exist.\nCan not proceed further.')
         return False
     if not original_dir.is_dir():
-        print_messages(f'The Main directory {original_dir} does not exist.  Can not proceed further.')
+        print_messages(f'The Main directory {original_dir} does not exist.\nCan not proceed further.')
         return False
     return True
 
@@ -165,8 +165,11 @@ def print_messages(s, open=True, close=True):
 
 
 def main():
-    # if not test_paths():
-    #     exit()
+    print_messages("Ready to rock!", close=False)
+    print_messages(f"The main db location is {music_db}", False, False)
+    print_messages(f"additional temp path is {working_dir}", open=False)
+    if not test_paths():
+        exit()
     # data.db_first_launch(music_db)
     # data.make_tables(music_db)
     #
@@ -181,9 +184,6 @@ def main():
     #
     # if file_count > 0:
     #     proc_temp()
-    print_messages("Ready to rock!", close=False)
-    print_messages(f"The main db location is {music_db}", False, False)
-    print_messages(f"additional temp path is {working_dir}", open=False)
 
 
 if __name__ == '__main__':
