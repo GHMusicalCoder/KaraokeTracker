@@ -1,3 +1,8 @@
+"""
+This is the sqlite database class that handles the database access for the Karaoke Tracker
+written by MusicalCoder
+written on 2018-05-13 (@Pycon)
+"""
 import sqlite3
 from contextlib import contextmanager
 
