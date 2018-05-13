@@ -3,6 +3,74 @@ import sys
 from contextlib import contextmanager
 
 
+class TrackingDB(object):
+    """
+    This class should handle ALL access to the database.
+    """
+
+    def __init__(self, db_file, first_run=False):
+        """
+        Initialize the connection to our database
+        If first run is true, we'll build the DB and create the initial table, otherwise
+        we'll read the value of version to set the db version and then run the db update function
+        :param db_file: this is the name/location of the database file
+        :param first_run: a boolean that tells us if we need to create the db first
+        """
+        self.database = db_file
+        self.db_version = 0
+        self.db_valid = True
+        if first_run:
+            # the database doesn't exist - so we will initiate the file and add the kt_main table
+            print("*" * 60)
+            print("Initializing the database file")
+            print()
+            try:
+                conn = sqlite3.connect(db_file)
+                cursor = conn.cursor()
+                cursor.execute("PRAGMA foreign_keys = ON;")
+                cursor.execute("CREATE TABLE if not exists kt_main (version INTEGER);")
+                cursor.execute("INSERT INTO kt_main (version) VALUES (0);")
+                conn.commit()
+                conn.close()
+            except Exception as e:
+                self.db_valid = False
+        else:
+            conn = sqlite3.connect(db_file)
+            cursor = conn.cursor()
+            cursor.execute("SELECT version FROM kt_main;")
+            value = cursor.fetchall()
+            self.db_version = value[0][0]
+            conn.close()
+
+        self.db_valid = self.db_update_all()
+
+    def db_update_all(self):
+        """
+        processes through various updates
+        :: idea here is that version starts at 0 on database creation, and we'll do a check to see if version is
+        :: less than 1, and run the table creations and then update version to 1
+        :: THEN, on the next update, we'll check if version is below 2, and then run that update (so that this will
+        :: run on every class instantiation, but will only update the tables if the version dictates an update
+        :: ALL THAT NEEDS TO BE MODIFIED IS THE FINAL ENTRY TO UPDATE THE VERSION (and then insert the new version
+        :: before it)
+        :return: True if no issues, otherwise false
+        """
+
+        if self.db_version > 1:
+            # run DB update 1
+            if not self.db_update_one():
+                return False
+
+        if self.db_version == 1:
+            return True
+
+    def db_update_one(self):
+        """
+        first database update
+        :return: True if no problem with update - otherwise returns false
+        """
+        return True
+
 def db_first_launch(DB):
     try:
         conn = sqlite3.connect(DB)
@@ -24,7 +92,7 @@ def access_db(DB):
 def make_tables(DB):
     with access_db(DB) as cursor:
         # Turn On Foreign Keys
-        cursor.execute("PRAGMA foreign_keys = ON;")
+
         # Artist table - ID and Artist Name (maybe additional items later)
         cursor.execute("CREATE TABLE if not exists Artists (ArtistID INTEGER PRIMARY KEY, Artist TEXT);")
         # Temp Artist table - this may or may not be used - depending on how I work this program
