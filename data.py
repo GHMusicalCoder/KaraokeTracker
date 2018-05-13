@@ -126,6 +126,27 @@ class TrackingDB(object):
         except Exception as e:
             return False
 
+    def get_artist(self, name):
+        """
+        first look through artist table for the artist name, then check the artist alias table
+        :param name: name of the artist we are looking for
+        :return: either artist id or 0 if not found
+        """
+        with self.access_db() as sql:
+            sql.execute("select ArtistID from Artists where Artist = '{0}'".format(name))
+            data = sql.fetchone()
+            if data:
+                # data should be a tuple with (id, blank)
+                return data[0]
+            else:
+                # now we test alias table
+                sql.execute("select ArtistID from ArtistAlias where ArtistAlias = '{0}'".format(name))
+                data = sql.fetchone()
+                if data:
+                    return data[0]
+
+        return 0
+
     @contextmanager
     def access_db(self):
         try:
@@ -135,5 +156,3 @@ class TrackingDB(object):
         finally:
             conn.commit()
             conn.close()
-
-
