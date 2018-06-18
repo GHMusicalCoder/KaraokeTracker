@@ -25,7 +25,7 @@ class TrackingDB(object):
         self.db_valid = True
         if first_run:
             # the database doesn't exist - so we will initiate the file and add the kt_main table
-            self.print_class_message("Initializing the database file")
+            self.print_class_message(f"Initializing the database file {self.database}")
             try:
                 conn = sqlite3.connect(db_file)
                 cursor = conn.cursor()
@@ -36,6 +36,7 @@ class TrackingDB(object):
                 conn.close()
             except Exception as e:
                 self.db_valid = False
+                self.print_class_message(f"Error initializing database: {e}")
         else:
             self.print_class_message("Checking for database updates...")
             conn = sqlite3.connect(db_file)

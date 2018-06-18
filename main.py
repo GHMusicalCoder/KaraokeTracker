@@ -10,6 +10,9 @@ def test_paths():
     may eventually turn this into option to select - but for now they are set in the main variables
     :return: false for any directory that is missing, otherwise true if all directories are verified
     """
+    if not db_dir.is_dir():
+        print_messages(f'The database location {working_dir} does not exist.\nCan not proceed further.')
+        return False
     if not working_dir.is_dir():
         print_messages(f'The Temp location {working_dir} does not exist.\nCan not proceed further.')
         return False
@@ -183,6 +186,8 @@ def main():
     """
     if not test_paths():
         exit()
+
+    music = data.TrackingDB(music_db, not music_db.exists())
     # data.db_first_launch(music_db)
     # data.make_tables(music_db)
     #
@@ -200,6 +205,7 @@ def main():
 
 
 if __name__ == '__main__':
+    db_dir = Path.home() / '.databases'
     music_db = Path.home() / '.databases' / 'music.db'
     working_dir = Path.home() / 'Temp' / 'KT_Temp'
     original_dir = Path.home() / 'Work' / 'KaraokeSCCDs'
