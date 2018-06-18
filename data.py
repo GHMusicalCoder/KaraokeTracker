@@ -91,15 +91,21 @@ class TrackingDB(object):
             with self.access_db() as c:
                 print("   Creating Artist Table...")
                 c.execute("CREATE TABLE if not exists Artists (ArtistID INTEGER PRIMARY KEY, Artist TEXT);")
+                print("   Creating Index for Artist Table")
+                c.execute("CREATE INDEX if not extists IX_Artists_Artist ON Artists (Artist);")
                 print("   Creating Artist Alias table...")
                 c.execute("CREATE TABLE if not exists ArtistAlias "
                           "(ArtistAliasID INTEGER PRIMARY KEY, ArtistAlias TEXT, ArtistID INTEGER,"
                           "FOREIGN KEY(ArtistID) REFERENCES Artists(ArtistID));")
+                print("   Creating Index for Artist Alias Table")
+                c.execute("CREATE INDEX if not extists IX_ArtistAlias_ArtistAlias ON ArtistAlias (ArtistAlias);")
                 print("    Creating Song table...")
                 c.execute("CREATE TABLE if not exists Song "
                           "(SongID INTEGER PRIMARY KEY, Song TEXT, PrimaryArtist INTEGER,"
                           "IsMusic INTEGER, IsKaraoke INTEGER,"
                           "FOREIGN KEY(PrimaryArtist) REFERENCES Artists(ArtistID));")
+                print("   Creating Index for Songs Table")
+                c.execute("CREATE INDEX if not extists IX_Song_Song ON Song (Song);")
                 print("    Creating Song Featuring table...")
                 c.execute("CREATE TABLE if not exists SongFeaturing"
                           "(SongID INTEGER, ArtistID INTEGER, PRIMARY KEY (SongID, ArtistID),"
@@ -108,14 +114,21 @@ class TrackingDB(object):
                 print("    Creating Karaoke Vendors table...")
                 c.execute("CREATE TABLE if not exists KaraokeVendors"
                           "(VendorID INTEGER PRIMARY KEY, Vendor TEXT);")
+                print("   Creating Index for KaraokeVendors Table")
+                c.execute("CREATE INDEX if not extists IX_KaraokeVendors_Vendor ON KaraokeVendors (Vendor);")
                 print("    Creating Karaoke Abbreviations table...")
                 c.execute("CREATE TABLE if not exists VendorAbbreviations"
                           "(VendorID INTEGER, Abbreviation TEXT UNIQUE, IsPrimaryAbbreviation INTEGER,"
                           "FOREIGN KEY(VendorID) REFERENCES KaraokeVendors(VendorID));")
+                print("   Creating Index for VendorAbbreviations Table")
+                c.execute("CREATE INDEX if not exists IX_VendorAbbreviations_Abbreviation"
+                          "ON VendorAbbreviations (Abbreviation);")
                 print("    Creating Song Alias table...")
                 c.execute("CREATE TABLE if not exists SongAlias"
                           "(SongAliasID INTEGER PRIMARY KEY, SongID INTEGER, SongAlias TEXT,"
                           "FOREIGH KEY(SongID) REFERENCES Song(SongID));")
+                print("   Creating ICREATEndex for SongAlias Table")
+                c.execute("CREATE INDEX if not extists IX_SongAlias_SongAlias ON SongAlias (SongAlias);")
                 print("    Creating Karaoke Disc table...")
                 c.execute("CREATE TABLE if not exists KaraokeDiscs"
                           "(DiscID INTEGER PRIMARY KEY, VendorID INTEGER, Disc TEXT,"
