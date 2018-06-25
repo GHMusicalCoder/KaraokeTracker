@@ -20,18 +20,18 @@ class TrackingDB(object):
         :param db_file: this is the name/location of the database file
         :param first_run: a boolean that tells us if we need to create the db first
         """
-        self.database = db_file
+        self.database = str(db_file)
         self.db_version = 0
         self.db_valid = True
         if first_run:
             # the database doesn't exist - so we will initiate the file and add the kt_main table
             self.print_class_message(f"Initializing the database file {self.database}")
             try:
-                conn = sqlite3.connect(db_file)
+                conn = sqlite3.connect(self.database)
                 cursor = conn.cursor()
                 cursor.execute("PRAGMA foreign_keys = ON;")
-                cursor.execute("CREATE TABLE if not exists kt_main (version INTEGER);")
-                cursor.execute("INSERT INTO kt_main (version) VALUES (0);")
+                cursor.execute("CREATE TABLE if not exists main (version INTEGER);")
+                cursor.execute("INSERT INTO main (version) VALUES (0);")
                 conn.commit()
                 conn.close()
             except Exception as e:
@@ -39,9 +39,9 @@ class TrackingDB(object):
                 self.print_class_message(f"Error initializing database: {e}")
         else:
             self.print_class_message("Checking for database updates...")
-            conn = sqlite3.connect(db_file)
+            conn = sqlite3.connect(self.database)
             cursor = conn.cursor()
-            cursor.execute("SELECT version FROM kt_main;")
+            cursor.execute("SELECT version FROM main;")
             value = cursor.fetchall()
             self.db_version = value[0][0]
             conn.close()
@@ -93,20 +93,20 @@ class TrackingDB(object):
                 print("   Creating Artist Table...")
                 c.execute("CREATE TABLE if not exists Artists (ArtistID INTEGER PRIMARY KEY, Artist TEXT);")
                 print("   Creating Index for Artist Table")
-                c.execute("CREATE INDEX if not extists IX_Artists_Artist ON Artists (Artist);")
+                c.execute("CREATE INDEX if not exists IX_Artists_Artist ON Artists (Artist);")
                 print("   Creating Artist Alias table...")
                 c.execute("CREATE TABLE if not exists ArtistAlias "
                           "(ArtistAliasID INTEGER PRIMARY KEY, ArtistAlias TEXT, ArtistID INTEGER,"
                           "FOREIGN KEY(ArtistID) REFERENCES Artists(ArtistID));")
                 print("   Creating Index for Artist Alias Table")
-                c.execute("CREATE INDEX if not extists IX_ArtistAlias_ArtistAlias ON ArtistAlias (ArtistAlias);")
+                c.execute("CREATE INDEX if not exists IX_ArtistAlias_ArtistAlias ON ArtistAlias (ArtistAlias);")
                 print("    Creating Song table...")
                 c.execute("CREATE TABLE if not exists Song "
                           "(SongID INTEGER PRIMARY KEY, Song TEXT, PrimaryArtist INTEGER,"
                           "IsMusic INTEGER, IsKaraoke INTEGER,"
                           "FOREIGN KEY(PrimaryArtist) REFERENCES Artists(ArtistID));")
                 print("   Creating Index for Songs Table")
-                c.execute("CREATE INDEX if not extists IX_Song_Song ON Song (Song);")
+                c.execute("CREATE INDEX if not exists IX_Song_Song ON Song (Song);")
                 print("    Creating Song Featuring table...")
                 c.execute("CREATE TABLE if not exists SongFeaturing"
                           "(SongID INTEGER, ArtistID INTEGER, PRIMARY KEY (SongID, ArtistID),"
@@ -116,7 +116,7 @@ class TrackingDB(object):
                 c.execute("CREATE TABLE if not exists KaraokeVendors"
                           "(VendorID INTEGER PRIMARY KEY, Vendor TEXT);")
                 print("   Creating Index for KaraokeVendors Table")
-                c.execute("CREATE INDEX if not extists IX_KaraokeVendors_Vendor ON KaraokeVendors (Vendor);")
+                c.execute("CREATE INDEX if not exists IX_KaraokeVendors_Vendor ON KaraokeVendors (Vendor);")
                 print("    Creating Karaoke Abbreviations table...")
                 c.execute("CREATE TABLE if not exists VendorAbbreviations"
                           "(VendorID INTEGER, Abbreviation TEXT UNIQUE, IsPrimaryAbbreviation INTEGER,"
@@ -129,7 +129,7 @@ class TrackingDB(object):
                           "(SongAliasID INTEGER PRIMARY KEY, SongID INTEGER, SongAlias TEXT,"
                           "FOREIGH KEY(SongID) REFERENCES Song(SongID));")
                 print("   Creating ICREATEndex for SongAlias Table")
-                c.execute("CREATE INDEX if not extists IX_SongAlias_SongAlias ON SongAlias (SongAlias);")
+                c.execute("CREATE INDEX if not exists IX_SongAlias_SongAlias ON SongAlias (SongAlias);")
                 print("    Creating Karaoke Disc table...")
                 c.execute("CREATE TABLE if not exists KaraokeDiscs"
                           "(DiscID INTEGER PRIMARY KEY, VendorID INTEGER, Disc TEXT,"
@@ -143,6 +143,7 @@ class TrackingDB(object):
                 self.print_class_message("All #1 updates have been applied successfully", open=False)
             return True
         except Exception as e:
+            self.print_class_message(f"Problem encountered {e}")
             return False
 
     def get_artist(self, name):
